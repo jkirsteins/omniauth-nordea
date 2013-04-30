@@ -1,5 +1,6 @@
 require 'omniauth'
 require 'base64'
+require 'omniauth/strategies/nordea/request_helpers'
 
 module OmniAuth
   module Strategies
