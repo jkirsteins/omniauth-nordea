@@ -17,9 +17,18 @@ module OmniAuth
 
       # Supported algorithms: :sha1 and :md5
       option :hash_algorithm, :sha1
-
       option :name, "nordea"
       option :endpoint, PRODUCTION_ENDPOINT
+
+      uid do
+        request.params["B02K_CUSTID"].insert(6, "-")
+      end
+
+      info do
+        {
+          :full_name => request.params["B02K_CUSTNAME"]
+        }
+      end
 
       def callback_phase
         super
@@ -43,8 +52,8 @@ module OmniAuth
 
         form.button "Click here if not redirected automatically ..."
 
-        # form.instance_variable_set("@html",
-        #   form.to_html.gsub("</form>", "</form><script type=\"text/javascript\">document.forms[0].submit();</script>"))
+        form.instance_variable_set("@html",
+          form.to_html.gsub("</form>", "</form><script type=\"text/javascript\">document.forms[0].submit();</script>"))
         form.to_response
       rescue Exception => e
         fail!(:unknown_request_err, e)
