@@ -19,64 +19,70 @@ module OmniAuth
       # 'A01Y_KEYVERS',
       # 'A01Y_ALG',     01 for md5, 02 for sha1
       # 'A01Y_MAC',
-      ALG_NAME_ID_MAP = { :md5 => :"01", :sha1 => :"02" }
 
-      def self.callback_variation(callback_url, status)
-        url = URI(callback_url)
-        url.query = "omniauth_status=#{status}"
-        url
-      end
+      ALGORITHM_NAMES = { "01" => :md5, "02" => :sha1 }
+      SUPPORTED_LANG_CODES = [ :LV, :ET, :LT, :EN ]
+      SUPPORTED_VERSIONS = [ "0002" ]
 
-      # We're counting on receiving an ordered hash
-      # This method
-      def self.sign_hash_in_place(hash)
-        alg = ALG_NAME_ID_MAP.key(hash[:A01_ALG])
-        signable_string = hash.values.join("&") + "&"
+      class << self
 
-        if alg == :sha1
-          signable_string = Digest::SHA1.hexdigest signable_string
-        elsif alg == :md5
-          signable_string = Digest::MD5.hexdigest signable_string
+        def callback_variation(callback_url, status)
+          url = URI(callback_url)
+          url.query = "omniauth_status=#{status}"
+          url
         end
 
-        hash[:A01Y_MAC] = signable_string
-      end
+        # We're counting on receiving an ordered hash
+        # This method
+        def sign_hash_in_place(hash)
 
-      def self.build_request_hash(rcvid, mac, callback_url, opts = {})
-        opts = {
-          :algorithm => :sha1,
-          :version => :"0002",
-          :langcode => :LV
+          signable_string = hash.values.join("&") + "&"
+
+          digest_class =
+            case ALGORITHM_NAMES[ hash["A01Y_ALG"] ]
+            when :sha1
+              Digest::SHA1
+            when :md5
+              Digest::MD5
+          end
+
+          hash["A01Y_MAC"] = digest_class.send(:hexdigest, signable_string)
+        end
+
+        def build_request_hash(rcvid, mac, callback_url, opts = {})
+          opts = {
+            algorithm: :sha1,
+            version:   "0002",
+            langcode:  :LV
           }.merge(opts)
 
-        supported_langcodes = [:LV, :ET, :LT, :EN]
-        if !supported_langcodes.include?(opts[:langcode])
-          raise ArgumentError.new (":langcode must be one of " + supported_langcodes.to_s)
-        end
+          if !SUPPORTED_LANG_CODES.include?(opts[:langcode])
+            raise ArgumentError.new (":langcode must be one of " + SUPPORTED_LANG_CODES.to_s)
+          end
 
-        if !ALG_NAME_ID_MAP.keys.include?(opts[:algorithm])
-          raise ArgumentError.new (":algorithm must be one of " + ALG_NAME_ID_MAP.keys.to_s)
-        end
+          if !ALGORITHM_NAMES.values.include?(opts[:algorithm])
+            raise ArgumentError.new (":algorithm must be one of " + ALGORITHM_NAMES.values.to_s)
+          end
 
-        supported_versions = [:"0002"]
-        if !supported_versions.include?(opts[:version])
-          raise ArgumentError.new (":version must be one of " + supported_versions.to_s)
-        end
+          if !SUPPORTED_VERSIONS.include?(opts[:version])
+            raise ArgumentError.new (":version must be one of " + SUPPORTED_VERSIONS.to_s)
+          end
 
-        hash = {
-          :A01Y_ACTION_ID => :"701",
-          :A01Y_VERS => opts[:version],
-          :A01Y_RCVID => rcvid,
-          :A01Y_LANGCODE => opts[:langcode],
-          :A01Y_STAMP => "yyyymmddhhmmssxxxxxx",
-          :A01Y_IDTYPE => :"02",
-          :A01Y_RETLINK => self.callback_variation(callback_url, "success"),
-          :A01Y_CANLINK => self.callback_variation(callback_url, "cancelled"),
-          :A01Y_REJLINK => self.callback_variation(callback_url, "rejected"),
-          :A01Y_KEYVERS => :"0001",
-          :A01Y_ALG => ALG_NAME_ID_MAP.fetch(opts[:algorithm]),
-          :A01Y_MAC => mac
-        }
+          {
+            "A01Y_ACTION_ID" =>   "701",
+            "A01Y_VERS" =>        opts[:version],
+            "A01Y_RCVID" =>       rcvid,
+            "A01Y_LANGCODE" =>    opts[:langcode],
+            "A01Y_STAMP" =>       "yyyymmddhhmmssxxxxxx",
+            "A01Y_IDTYPE" =>      "02",
+            "A01Y_RETLINK" =>     self.callback_variation(callback_url, "success"),
+            "A01Y_CANLINK" =>     self.callback_variation(callback_url, "cancelled"),
+            "A01Y_REJLINK" =>     self.callback_variation(callback_url, "rejected"),
+            "A01Y_KEYVERS" =>     "0001",
+            "A01Y_ALG" =>         ALGORITHM_NAMES.key(opts[:algorithm]),
+            "A01Y_MAC" =>         mac
+          }
+        end
       end
     end
   end
