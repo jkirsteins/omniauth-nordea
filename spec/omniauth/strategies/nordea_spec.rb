@@ -61,7 +61,7 @@ describe OmniAuth::Strategies::Nordea do
           "B02K_CUSTNAME" => "Example User",
           "B02K_KEYVERS" => "0001",
           "B02K_ALG" => "02",
-          "B02K_CUSTID" => "123456-12345",
+          "B02K_CUSTID" => "12345612345",
           "B02K_CUSTTYPE" => "01",
           "B02K_MAC" => "852E3207E143677B6E622DDF1D27B13979DB8C67"
       end

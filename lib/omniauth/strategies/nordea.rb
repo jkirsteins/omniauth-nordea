@@ -21,7 +21,10 @@ module OmniAuth
       option :endpoint, PRODUCTION_ENDPOINT
 
       uid do
-        request.params["B02K_CUSTID"] #.insert(6, "-")
+        # extract first 6 and last 5 digits - then join with "-"
+
+        request.params["B02K_CUSTID"].match /\A(\d{6}).*(\d{5})\Z/
+        [$1, $2].join("-")
       end
 
       info do
