@@ -58,7 +58,7 @@ describe OmniAuth::Strategies::Nordea do
           "B02K_TIMESTMP" => "2002014020513320773",
           "B02K_IDNBR" => "f26402f2250340dba8b24c8498fd8c58",
           "B02K_STAMP" => "yyyymmddhhmmssxxxxxx",
-          "B02K_CUSTNAME" => "Example User",
+          "B02K_CUSTNAME" => "Last First",
           "B02K_KEYVERS" => "0001",
           "B02K_ALG" => "02",
           "B02K_CUSTID" => "12345612345",
@@ -71,7 +71,7 @@ describe OmniAuth::Strategies::Nordea do
       end
 
       it "sets the correct info.full_name value in the auth hash" do
-        expect(auth_hash.info.full_name).to eq("Example User")
+        expect(auth_hash.info.full_name).to eq("First Last")
       end
     end
 

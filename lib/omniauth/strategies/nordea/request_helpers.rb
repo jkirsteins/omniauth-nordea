@@ -20,7 +20,7 @@ module OmniAuth
       # 'A01Y_ALG',     01 for md5, 02 for sha1
       # 'A01Y_MAC',
 
-      ALGORHYTHM_NAMES = { "01" => :md5, "02" => :sha1 }
+      ALGORITHM_NAMES = { "01" => :md5, "02" => :sha1 }
       SUPPORTED_LANG_CODES = [ :LV, :ET, :LT, :EN ]
       SUPPORTED_VERSIONS = [ "0002" ]
 
@@ -39,7 +39,7 @@ module OmniAuth
           signable_string = hash.values.join("&") + "&"
 
           digest_class =
-            case ALGORHYTHM_NAMES[ hash["A01Y_ALG"] ]
+            case ALGORITHM_NAMES[ hash["A01Y_ALG"] ]
             when :sha1
               Digest::SHA1
             when :md5
@@ -60,8 +60,8 @@ module OmniAuth
             raise ArgumentError.new (":langcode must be one of " + SUPPORTED_LANG_CODES.to_s)
           end
 
-          if !ALGORHYTHM_NAMES.values.include?(opts[:algorithm])
-            raise ArgumentError.new (":algorithm must be one of " + ALGORHYTHM_NAMES.values.to_s)
+          if !ALGORITHM_NAMES.values.include?(opts[:algorithm])
+            raise ArgumentError.new (":algorithm must be one of " + ALGORITHM_NAMES.values.to_s)
           end
 
           if !SUPPORTED_VERSIONS.include?(opts[:version])
@@ -79,7 +79,7 @@ module OmniAuth
             "A01Y_CANLINK" =>     self.callback_variation(callback_url, "cancelled"),
             "A01Y_REJLINK" =>     self.callback_variation(callback_url, "rejected"),
             "A01Y_KEYVERS" =>     "0001",
-            "A01Y_ALG" =>         ALGORHYTHM_NAMES.key(opts[:algorithm]),
+            "A01Y_ALG" =>         ALGORITHM_NAMES.key(opts[:algorithm]),
             "A01Y_MAC" =>         mac
           }
         end
