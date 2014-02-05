@@ -7,6 +7,10 @@ Omniauth strategy for using Nordea Latvia as an authentication service provider.
 
 Supported Ruby versions: 1.9.2, 1.9.3 and 2.0.0
 
+## Related projects
+
+- [omniauth-swedbank](http://github.com/kirsis/omniauth-swedbank) - strategy for authenticating with Swedbank in the Baltic states
+
 ## Installation
 
 Add this line to your application's Gemfile:
