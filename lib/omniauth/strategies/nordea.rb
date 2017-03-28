@@ -17,7 +17,7 @@ module OmniAuth
 
       # Supported algorithms: :sha1 and :md5
       option :hash_algorithm, :sha1
-      option :name, "nordea"
+      option :name, "nordea" # Can't find where it's used
       option :endpoint, PRODUCTION_ENDPOINT
 
       uid do
@@ -37,9 +37,8 @@ module OmniAuth
       end
 
       def request_phase
-
         param_hash = OmniAuth::Strategies::Nordea.build_request_hash(options.rcvid, options.mac,
-          full_host + script_name + callback_path)
+          full_host + script_name + callback_path, algorithm: options.hash_algorithm)
         OmniAuth::Strategies::Nordea.sign_hash_in_place(param_hash)
 
         # Build redirect form
