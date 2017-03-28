@@ -42,7 +42,6 @@ module OmniAuth
         OmniAuth::Strategies::Nordea.sign_hash_in_place(param_hash)
 
         # Build redirect form
-        OmniAuth.config.form_css = nil
         form = OmniAuth::Form.new(title: I18n.t("omniauth.nordea.please_wait"), url: options.endpoint)
 
         param_hash.each_pair do |k,v|
