@@ -17,7 +17,7 @@ module OmniAuth
 
       # Supported algorithms: :sha1 and :md5
       option :hash_algorithm, :sha1
-      option :name, "nordea" # Can't find where it's used
+      option :name, "nordea"
       option :endpoint, PRODUCTION_ENDPOINT
 
       uid do
