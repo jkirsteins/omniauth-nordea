@@ -2,10 +2,10 @@
 
 Omniauth strategy for using Nordea Latvia as an authentication service provider.
 
-[![Gem Version](https://badge.fury.io/rb/omniauth-nordea.png)](http://badge.fury.io/rb/omniauth-nordea)
-[![Build Status](https://travis-ci.org/kirsis/omniauth-nordea.png?branch=master)](https://travis-ci.org/kirsis/omniauth-nordea)
+[![Gem Version](https://badge.fury.io/rb/omniauth-nordea.svg)](http://badge.fury.io/rb/omniauth-nordea)
+[![Build Status](https://travis-ci.org/kirsis/omniauth-nordea.svg?branch=master)](https://travis-ci.org/kirsis/omniauth-nordea)
 
-Supported Ruby versions: 1.9.2, 1.9.3 and 2.0.0
+Supported Ruby versions: 2.2+
 
 ## Related projects
 
