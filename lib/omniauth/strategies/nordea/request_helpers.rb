@@ -46,7 +46,7 @@ module OmniAuth
               Digest::MD5
           end
 
-          hash["A01Y_MAC"] = digest_class.send(:hexdigest, signable_string)
+          hash["A01Y_MAC"] = digest_class.send(:hexdigest, signable_string).upcase
         end
 
         def build_request_hash(rcvid, mac, callback_url, opts = {})

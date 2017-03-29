@@ -37,20 +37,18 @@ module OmniAuth
       end
 
       def request_phase
-
         param_hash = OmniAuth::Strategies::Nordea.build_request_hash(options.rcvid, options.mac,
-          full_host + script_name + callback_path)
+          full_host + script_name + callback_path, algorithm: options.hash_algorithm)
         OmniAuth::Strategies::Nordea.sign_hash_in_place(param_hash)
 
         # Build redirect form
-        OmniAuth.config.form_css = nil
-        form = OmniAuth::Form.new(title: I18n.t("omniauth.swedbank.please_wait"), url: options.endpoint)
+        form = OmniAuth::Form.new(title: I18n.t("omniauth.nordea.please_wait"), url: options.endpoint)
 
         param_hash.each_pair do |k,v|
           form.html "<input type=\"hidden\" name=\"#{k}\" value=\"#{v}\" />"
         end
 
-        form.button I18n.t("omniauth.swedbank.click_here_if_not_redirected")
+        form.button I18n.t("omniauth.nordea.click_here_if_not_redirected")
 
         form.instance_variable_set("@html",
           form.to_html.gsub("</form>", "</form><script type=\"text/javascript\">document.forms[0].submit();</script>"))

@@ -36,7 +36,7 @@ describe OmniAuth::Strategies::Nordea do
       "A01Y_REJLINK" => "http://example.org/auth/nordea/callback?omniauth_status=rejected",
       "A01Y_KEYVERS" => "0001",
       "A01Y_ALG" => "02",
-      "A01Y_MAC" => "c2e09d42e0eaf565ba1b14074f3bdae341b35bce"
+      "A01Y_MAC" => "C2E09D42E0EAF565BA1B14074F3BDAE341B35BCE"
     }
 
     EXPECTED_VALUES.each_pair do |k,v|
@@ -53,7 +53,7 @@ describe OmniAuth::Strategies::Nordea do
 
     context "with valid response" do
       before do
-        post :'/auth/nordea/callback',
+        post '/auth/nordea/callback',
           "B02K_VERS" => "0002",
           "B02K_TIMESTMP" => "2002014020513320773",
           "B02K_IDNBR" => "f26402f2250340dba8b24c8498fd8c58",
