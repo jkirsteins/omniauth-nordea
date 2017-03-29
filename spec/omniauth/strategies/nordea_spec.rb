@@ -1,13 +1,12 @@
 require 'spec_helper'
 
 describe OmniAuth::Strategies::Nordea do
-
-  RCVID = '11111111111'
-  MAC = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+  RCVID = '87654321LV'
+  MAC   = 'LEHTI'
 
   let(:app){ Rack::Builder.new do |b|
     b.use Rack::Session::Cookie, {:secret => "abc123"}
-    b.use OmniAuth::Strategies::Nordea, RCVID, MAC
+    b.use OmniAuth::Strategies::Nordea, RCVID, MAC, hash_algorithm: :md5
     b.run lambda{|env| [404, {}, ['Not Found']]}
   end.to_app }
 
@@ -35,14 +34,15 @@ describe OmniAuth::Strategies::Nordea do
       "A01Y_CANLINK" => "http://example.org/auth/nordea/callback?omniauth_status=cancelled",
       "A01Y_REJLINK" => "http://example.org/auth/nordea/callback?omniauth_status=rejected",
       "A01Y_KEYVERS" => "0001",
-      "A01Y_ALG" => "02",
-      "A01Y_MAC" => "C2E09D42E0EAF565BA1B14074F3BDAE341B35BCE"
+      "A01Y_ALG" => "01",
+      "A01Y_MAC" => "5EF7613AA29E659456C47D0F9C471470"
     }
 
     EXPECTED_VALUES.each_pair do |k,v|
       it "has hidden input field #{k} => #{v}" do
-        expect(last_response.body.scan(
-          "<input type=\"hidden\" name=\"#{k}\" value=\"#{v}\"").size).to eq(1)
+        expect(last_response.body).to include(
+          "<input type=\"hidden\" name=\"#{k}\" value=\"#{v}\""
+        )
       end
     end
 
@@ -54,24 +54,45 @@ describe OmniAuth::Strategies::Nordea do
     context "with valid response" do
       before do
         post '/auth/nordea/callback',
-          "B02K_VERS" => "0002",
-          "B02K_TIMESTMP" => "2002014020513320773",
-          "B02K_IDNBR" => "f26402f2250340dba8b24c8498fd8c58",
-          "B02K_STAMP" => "yyyymmddhhmmssxxxxxx",
-          "B02K_CUSTNAME" => "Last First",
-          "B02K_KEYVERS" => "0001",
-          "B02K_ALG" => "02",
-          "B02K_CUSTID" => "12345612345",
-          "B02K_CUSTTYPE" => "01",
-          "B02K_MAC" => "852E3207E143677B6E622DDF1D27B13979DB8C67"
+          "B02K_ALG": "01",
+          "B02K_CUSTID": "37404280367",
+          "B02K_CUSTNAME": "RAITUMS ARNIS",
+          "B02K_CUSTTYPE": "01",
+          "B02K_IDNBR": "87654321LV",
+          "B02K_KEYVERS": "0001",
+          "B02K_MAC": "B2B82821F6EB9CA28E4D67F343914363",
+          "B02K_STAMP": "yyyymmddhhmmssxxxxxx",
+          "B02K_TIMESTMP": "20020170329134514398",
+          "B02K_VERS": "0002"
       end
 
       it "sets the correct uid value in the auth hash" do
-        expect(auth_hash.uid).to eq("123456-12345")
+        expect(auth_hash.uid).to eq("374042-80367")
       end
 
       it "sets the correct info.full_name value in the auth hash" do
-        expect(auth_hash.info.full_name).to eq("First Last")
+        expect(auth_hash.info.full_name).to eq("ARNIS RAITUMS")
+      end
+    end
+
+    context "with invalid MAC" do
+      before do
+        post '/auth/nordea/callback',
+          "B02K_ALG": "01",
+          "B02K_CUSTID": "37404280367",
+          "B02K_CUSTNAME": "RAITUMS ARNIS",
+          "B02K_CUSTTYPE": "01",
+          "B02K_IDNBR": "87654321LV",
+          "B02K_KEYVERS": "0001",
+          "B02K_MAC": "B9CA28E4D67F343914B2B82821F6E363",
+          "B02K_STAMP": "yyyymmddhhmmssxxxxxx",
+          "B02K_TIMESTMP": "20020170329134514398",
+          "B02K_VERS": "0002"
+      end
+
+      it "fails with invalid_mac error" do
+        expect(auth_hash).to eq(nil)
+        expect(last_request.env['omniauth.error.type']).to eq(:invalid_mac)
       end
     end
 
