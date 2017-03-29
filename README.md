@@ -27,7 +27,45 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Here's a quick example, adding the middleware to a Rails app
+in `config/initializers/omniauth.rb`:
+
+```ruby
+Rails.application.config.middleware.use OmniAuth::Builder do
+  provider :nordea, ENV['NORDEA_RCVID'], ENV['NORDEA_MAC'],
+    endpoint: OmniAuth::Strategies::Nordea::PRODUCTION_ENDPOINT,
+    hash_algorithm: :sha1
+end
+```
+
+## Auth Hash
+
+Here's an example Auth Hash available in `request.env['omniauth.auth']`:
+
+```ruby
+{
+  provider: "nordea",
+  uid: "374042-80367",
+  info: {
+    full_name: "ARNIS RAITUMS"
+  },
+  extra: {
+    raw_info: {
+      B02K_ALG: "01",
+      B02K_CUSTID: "37404280367",
+      B02K_CUSTNAME: "RAITUMS ARNIS",
+      B02K_CUSTTYPE: "01",
+      B02K_IDNBR: "87654321LV",
+      B02K_KEYVERS: "0001",
+      B02K_MAC: "B2B82821F6EB9CA28E4D67F343914363",
+      B02K_STAMP: "yyyymmddhhmmssxxxxxx",
+      B02K_TIMESTMP: "20020170329134514398",
+      B02K_VERS: "0002",
+      omniauth_status: "success"
+    }
+  }
+}
+```
 
 ## Contributing
 
