@@ -26,14 +26,20 @@ module OmniAuth
 
       info do
         {
-          full_name: request.params["B02K_CUSTNAME"].dup.split(" ").reverse.join(" ")
+          full_name: request.params["B02K_CUSTNAME"].split(" ").reverse.join(" ")
         }
       end
 
+      extra do
+        { raw_info: request.params }
+      end
+
       def callback_phase
-        super
-      rescue Exception => e
-        fail!(:unknown_callback_err, e)
+        if request.params["B02K_CUSTID"].present?
+          super
+        else
+          fail!(:invalid_credentials)
+        end
       end
 
       def request_phase
@@ -53,8 +59,6 @@ module OmniAuth
         form.instance_variable_set("@html",
           form.to_html.gsub("</form>", "</form><script type=\"text/javascript\">document.forms[0].submit();</script>"))
         form.to_response
-      rescue Exception => e
-        fail!(:unknown_request_err, e)
       end
     end
   end
