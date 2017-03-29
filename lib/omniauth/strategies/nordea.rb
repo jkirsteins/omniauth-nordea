@@ -35,7 +35,7 @@ module OmniAuth
       end
 
       def callback_phase
-        if request.params["B02K_CUSTID"].present?
+        if request.params["B02K_CUSTID"] && !request.params["B02K_CUSTID"].empty?
           super
         else
           fail!(:invalid_credentials)
